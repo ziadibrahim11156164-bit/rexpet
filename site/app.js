@@ -1,0 +1,36 @@
+const L={ar:{home:"الرئيسية",about:"عن الكلان",leaders:"القيادة",rules:"الشروط",apply:"التقديم",contact:"تواصل معنا",applyNow:"قدّم للكلان",ctitle:"قيادة الكلان",rtitle:"شروط الانضمام إلى",atitle:"عن",ctitle2:"تواصل معنا",open:"فتح",empty:"لم تتم إضافة محتوى بعد.",f:["الاسم داخل اللعبة","العمر","Free Fire ID","Discord (اختياري)","WhatsApp (اختياري)","البلد","المستوى / Rank","وصف بسيط عن اللاعب"],vid:"رفع فيديو Gameplay",vlink:"أو رابط فيديو (YouTube / Drive)",send:"إرسال طلب الانضمام",need:"أكمل الحقول المطلوبة (الاسم، العمر، ID، البلد، Rank).",nowa:"رقم واتساب الكلان لم يتم ضبطه بعد.",done:"اتفتح واتساب برسالة طلبك. اضغط إرسال هناك. ",vstep:"بعد إرسال الرسالة ابعت الفيديو في نفس المحادثة:",vbtn:"إرسال الفيديو عبر واتساب",vhint:"افتح محادثة الكلان في واتساب واضغط 📎 وارفق الفيديو.",hint:"هيتفتح واتساب برسالة طلبك جاهزة، وبعدها تبعت الفيديو في نفس المحادثة."},
+en:{home:"Home",about:"About",leaders:"Leaders",rules:"Rules",apply:"Apply",contact:"Contact",applyNow:"Apply Now",ctitle:"Clan Leadership",rtitle:"Join requirements for",atitle:"About",ctitle2:"Contact Us",open:"Open",empty:"No content added yet.",f:["In-game name","Age","Free Fire ID","Discord (optional)","WhatsApp (optional)","Country","Rank / Level","Short description of the player"],vid:"Upload gameplay video",vlink:"Or a video link (YouTube / Drive)",send:"Submit application",need:"Fill the required fields (name, age, ID, country, rank).",nowa:"The clan WhatsApp number is not set yet.",done:"WhatsApp opened with your application. Press send there. ",vstep:"After sending the message, send your video in the same chat:",vbtn:"Send video via WhatsApp",vhint:"Open the clan chat in WhatsApp, tap 📎 and attach your video.",hint:"WhatsApp will open with your application ready, then you send the video in the same chat."}};
+const t=k=>L[S.lang][k];let route="home",menu=false,file=null;
+function render(){
+ applyTheme();
+ $("#nav").innerHTML=`<div class="logo" onclick="go('home')">${C.logo?`<img src="${esc(safeUrl(C.logo))}">`:""}${esc(name())}</div><button class="ib" id="burger" onclick="menu=!menu;render()">☰</button><div class="links ${menu?"o":""}">${["home","about","leaders","rules","apply","contact"].map(k=>`<a onclick="go('${k}')">${t(k)}</a>`).join("")}<button class="ib" onclick="S.lang=S.lang=='ar'?'en':'ar';sv('lang',S.lang);render()">${S.lang=="ar"?"EN":"ع"}</button><button class="ib" onclick="S.theme=S.theme=='dark'?'light':'dark';sv('theme',S.theme);render()">◐</button><a class="btn sm" onclick="go('apply')" style="color:#fff">${t("applyNow")}</a></div>`;
+ $("#app").innerHTML=route=="apply"?applyPg():home();
+ $("#foot").innerHTML=`<div class="logo" style="justify-content:center">${esc(name())}</div><p>${esc(pick(C,"about").slice(0,140))}</p><div class="row">${C.socials.map(s=>`<a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener" style="font-size:24px;text-decoration:none">${esc(s.icon||"🔗")}</a>`).join("")}</div>© 2026 ${esc(name())} Clan. All Rights Reserved.`;
+}
+function go(r){menu=false;if(["about","leaders","rules","contact"].includes(r)){const was=route;route="home";if(was!="home")render();setTimeout(()=>document.getElementById(r)?.scrollIntoView({behavior:"smooth"}),30);return}
+ route=r;history.replaceState(null,"","#"+r);file=null;render();window.scrollTo(0,0)}
+function home(){return `<div class="hero"><h1>${esc(name())}</h1><h3>FREE FIRE CLAN</h3><p>${esc(pick(C,"tag"))}</p><div class="row" style="justify-content:center"><button class="btn" onclick="go('apply')">${t("applyNow")}</button><button class="btn s" onclick="go('contact')">${t("contact")}</button></div></div>
+<section id="about"><h2>${t("atitle")} ${esc(name())}</h2><div class="card"><p style="font-size:18px;line-height:1.9;margin:0">${esc(pick(C,"about"))}</p></div></section>
+<section id="leaders"><h2>${t("ctitle")}</h2><div class="grid">${C.leaders.map(l=>`<div class="card">${l.img?`<img class="av" src="${esc(safeUrl(l.img))}">`:""}<div class="rank">${esc(l.rank)}</div><h3 style="margin:4px 0">${esc(l.name)}</h3>${l.contact?`<div style="color:var(--r)">${esc(l.contact)}</div>`:""}<p style="color:var(--m)">${esc(l.desc)}</p></div>`).join("")||`<p>${t("empty")}</p>`}</div></section>
+<section id="rules"><h2>${t("rtitle")} ${esc(name())}</h2><div class="grid">${C.rules.map((x,i)=>`<div class="card"><div class="num">${String(i+1).padStart(2,"0")}</div>${esc(pick(x,"text"))}</div>`).join("")||`<p>${t("empty")}</p>`}</div></section>
+<section id="contact"><h2>${t("ctitle2")}</h2><div class="grid">${C.socials.map(s=>`<div class="card"><div class="ic">${esc(s.icon||"🔗")}</div><h3>${esc(s.name)}</h3><p style="color:var(--m)">${esc(s.desc)}</p><a class="btn sm" target="_blank" rel="noopener" href="${esc(safeUrl(s.url))}">${t("open")}</a></div>`).join("")||`<p>${t("empty")}</p>`}</div></section>`}
+function applyPg(){const f=t("f"),k=["name","age","ffid","discord","wa","country","rank"];
+ return `<section><h2>${t("apply")}</h2><div class="card">${k.map((x,i)=>`<label>${f[i]}</label><input id="f_${x}" ${x=="age"?'type="number" min="8"':""}>`).join("")}<label>${f[7]}</label><textarea id="f_desc" rows="3"></textarea><label>${t("vid")}</label><input type="file" id="f_vid" accept="video/*" onchange="pv(this)"><video id="pv" controls hidden></video><label>${t("vlink")}</label><input id="f_vlink" placeholder="https://"><p style="color:var(--m);font-size:14px">${t("hint")}</p><div id="st"></div><p><button class="btn" onclick="submitApp()">${t("send")}</button></p></div></section>`}
+function pv(i){file=i.files[0]||null;const v=$("#pv");if(!file){v.hidden=true;return}v.src=URL.createObjectURL(file);v.hidden=false}
+function msgText(d){return `🔥 طلب انضمام لكلان ${name()}\n\nالاسم: ${d.name}\nالعمر: ${d.age}\nFree Fire ID: ${d.ffid}\nالبلد: ${d.country}\nالـ Rank: ${d.rank}\nDiscord: ${d.discord||"-"}\nWhatsApp: ${d.wa||"-"}\nوصف: ${d.desc||"-"}\nرابط الفيديو: ${d.vlink||"-"}\n\n${file?"سأرسل فيديو الـ Gameplay في الرسالة التالية 🎮":""}`}
+function submitApp(){
+ const g=x=>($("#f_"+x).value||"").trim(),d={};["name","age","ffid","discord","wa","country","rank","desc","vlink"].forEach(k=>d[k]=g(k));const st=$("#st");
+ if(!d.name||!d.age||!d.ffid||!d.country||!d.rank){st.innerHTML=`<div class="msg er">${t("need")}</div>`;return}
+ const num=String(C.whatsapp||"").replace(/\D/g,"");
+ if(!num){st.innerHTML=`<div class="msg er">${t("nowa")}</div>`;return}
+ window.open(`https://wa.me/${num}?text=${encodeURIComponent(msgText(d))}`,"_blank");
+ st.innerHTML=`<div class="msg ok">${t("done")}</div>`+(file?`<div class="msg wn">${t("vstep")}<br><button class="btn sm" style="margin-top:8px" onclick="shareVid()">${t("vbtn")}</button><div id="vh" style="margin-top:6px"></div></div>`:"");
+}
+async function shareVid(){
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return}}catch(e){if(e&&e.name=="AbortError")return}
+ $("#vh").textContent=t("vhint");
+}
+addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(["home","apply"].includes(h)&&h!=route){route=h;render()}});
+if(location.hash=="#apply")route="apply";
+particles();render();window.scrollTo(0,0);
+loadRemote().then(ok=>{if(ok&&!($("#f_name")&&$("#f_name").value))render()});
